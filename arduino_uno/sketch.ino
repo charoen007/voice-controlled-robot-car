@@ -1,117 +1,321 @@
-
-#include <Arduino.h>
-
-// Four simulated Mecanum wheel motors
-// Each motor uses two LEDs:
-// Green = Forward, Red = Reverse
-
-const byte motorPins[4][2] = {
-  {2, 3},  // Front Left  (FL)
-  {4, 5},  // Front Right (FR)
-  {6, 7},  // Rear Left   (RL)
-  {8, 9}   // Rear Right  (RR)
-};
-
-const char* motorNames[4] = {
-  "FL", "FR", "RL", "RR"
-};
-
-void setMotor(byte motor, int direction) {
-  digitalWrite(
-    motorPins[motor][0],
-    direction > 0 ? HIGH : LOW
-  );
-
-  digitalWrite(
-    motorPins[motor][1],
-    direction < 0 ? HIGH : LOW
-  );
-}
-
-void setWheels(int fl, int fr, int rl, int rr) {
-  setMotor(0, fl);
-  setMotor(1, fr);
-  setMotor(2, rl);
-  setMotor(3, rr);
-
-  int states[4] = {fl, fr, rl, rr};
-
-  for (int i = 0; i < 4; i++) {
-    Serial.print(motorNames[i]);
-    Serial.print(": ");
-
-    if (states[i] > 0) {
-      Serial.print("FORWARD");
-    } else if (states[i] < 0) {
-      Serial.print("REVERSE");
-    } else {
-      Serial.print("STOP");
+{
+  "version": 1,
+  "author": "No_Idea - Metropolia Robotics",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-arduino-uno",
+      "id": "uno",
+      "top": -20,
+      "left": -260,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "flF",
+      "top": -220,
+      "left": 140,
+      "attrs": {
+        "color": "green",
+        "label": "FL FWD"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "res_flF",
+      "top": -165,
+      "left": 141,
+      "rotate": 90,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "flR",
+      "top": -220,
+      "left": 230,
+      "attrs": {
+        "color": "red",
+        "label": "FL REV"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "res_flR",
+      "top": -165,
+      "left": 231,
+      "rotate": 90,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "frF",
+      "top": -80,
+      "left": 140,
+      "attrs": {
+        "color": "green",
+        "label": "FR FWD"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "res_frF",
+      "top": -25,
+      "left": 141,
+      "rotate": 90,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "frR",
+      "top": -80,
+      "left": 230,
+      "attrs": {
+        "color": "red",
+        "label": "FR REV"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "res_frR",
+      "top": -25,
+      "left": 231,
+      "rotate": 90,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "rlF",
+      "top": 60,
+      "left": 140,
+      "attrs": {
+        "color": "green",
+        "label": "RL FWD"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "res_rlF",
+      "top": 115,
+      "left": 141,
+      "rotate": 90,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "rlR",
+      "top": 60,
+      "left": 230,
+      "attrs": {
+        "color": "red",
+        "label": "RL REV"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "res_rlR",
+      "top": 115,
+      "left": 231,
+      "rotate": 90,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "rrF",
+      "top": 200,
+      "left": 140,
+      "attrs": {
+        "color": "green",
+        "label": "RR FWD"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "res_rrF",
+      "top": 255,
+      "left": 141,
+      "rotate": 90,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "rrR",
+      "top": 200,
+      "left": 230,
+      "attrs": {
+        "color": "red",
+        "label": "RR REV"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "res_rrR",
+      "top": 255,
+      "left": 231,
+      "rotate": 90,
+      "attrs": {
+        "value": "220"
+      }
     }
-
-    Serial.print("  ");
-  }
-
-  Serial.println();
-}
-
-void executeCommand(String command) {
-  command.trim();
-  command.toLowerCase();
-
-  Serial.print("Command: ");
-  Serial.println(command);
-
-  if (command == "forward" || command == "f") {
-    setWheels(1, 1, 1, 1);
-  }
-  else if (command == "backward" || command == "b") {
-    setWheels(-1, -1, -1, -1);
-  }
-  else if (command == "left" || command == "l") {
-    setWheels(-1, 1, -1, 1);
-  }
-  else if (command == "right" || command == "r") {
-    setWheels(1, -1, 1, -1);
-  }
-  else if (command == "strafeleft" || command == "q") {
-    setWheels(-1, 1, 1, -1);
-  }
-  else if (command == "straferight" || command == "e") {
-    setWheels(1, -1, -1, 1);
-  }
-  else if (command == "stop" || command == "s") {
-    setWheels(0, 0, 0, 0);
-  }
-  else {
-    Serial.println("Unknown command - STOP");
-    setWheels(0, 0, 0, 0);
-  }
-}
-
-void setup() {
-  Serial.begin(115200);
-  Serial.setTimeout(50);
-
-  for (int i = 0; i < 4; i++) {
-    pinMode(motorPins[i][0], OUTPUT);
-    pinMode(motorPins[i][1], OUTPUT);
-  }
-
-  setWheels(0, 0, 0, 0);
-
-  Serial.println();
-  Serial.println("=== Mecanum Robot Simulation ===");
-  Serial.println("Arduino UNO - 4 Motors / 8 LEDs");
-  Serial.println("Commands:");
-  Serial.println("forward, backward, left, right");
-  Serial.println("strafeleft, straferight, stop");
-  Serial.println("Or use: f b l r q e s");
-  Serial.println("================================");
-}
-
-void loop() {
-  if (Serial.available() > 0) {
-    String command = Serial.readStringUntil('\n');
-    executeCommand(command);
-  }
+  ],
+  "connections": [
+    [
+      "uno:2",
+      "res_flF:1",
+      "green",
+      []
+    ],
+    [
+      "res_flF:2",
+      "flF:A",
+      "green",
+      []
+    ],
+    [
+      "flF:C",
+      "uno:GND.1",
+      "black",
+      []
+    ],
+    [
+      "uno:3",
+      "res_flR:1",
+      "red",
+      []
+    ],
+    [
+      "res_flR:2",
+      "flR:A",
+      "red",
+      []
+    ],
+    [
+      "flR:C",
+      "uno:GND.1",
+      "black",
+      []
+    ],
+    [
+      "uno:4",
+      "res_frF:1",
+      "green",
+      []
+    ],
+    [
+      "res_frF:2",
+      "frF:A",
+      "green",
+      []
+    ],
+    [
+      "frF:C",
+      "uno:GND.1",
+      "black",
+      []
+    ],
+    [
+      "uno:5",
+      "res_frR:1",
+      "red",
+      []
+    ],
+    [
+      "res_frR:2",
+      "frR:A",
+      "red",
+      []
+    ],
+    [
+      "frR:C",
+      "uno:GND.1",
+      "black",
+      []
+    ],
+    [
+      "uno:6",
+      "res_rlF:1",
+      "green",
+      []
+    ],
+    [
+      "res_rlF:2",
+      "rlF:A",
+      "green",
+      []
+    ],
+    [
+      "rlF:C",
+      "uno:GND.1",
+      "black",
+      []
+    ],
+    [
+      "uno:7",
+      "res_rlR:1",
+      "red",
+      []
+    ],
+    [
+      "res_rlR:2",
+      "rlR:A",
+      "red",
+      []
+    ],
+    [
+      "rlR:C",
+      "uno:GND.1",
+      "black",
+      []
+    ],
+    [
+      "uno:8",
+      "res_rrF:1",
+      "green",
+      []
+    ],
+    [
+      "res_rrF:2",
+      "rrF:A",
+      "green",
+      []
+    ],
+    [
+      "rrF:C",
+      "uno:GND.1",
+      "black",
+      []
+    ],
+    [
+      "uno:9",
+      "res_rrR:1",
+      "red",
+      []
+    ],
+    [
+      "res_rrR:2",
+      "rrR:A",
+      "red",
+      []
+    ],
+    [
+      "rrR:C",
+      "uno:GND.1",
+      "black",
+      []
+    ]
+  ],
+  "dependencies": {}
 }
