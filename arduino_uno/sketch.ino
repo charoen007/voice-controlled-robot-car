@@ -1,34 +1,29 @@
 
 #include <Arduino.h>
-#include <SoftwareSerial.h>
 
-// UART from ESP32-S3
-constexpr int UART_RX = 10;
-constexpr int UART_TX = 11;
-constexpr unsigned long TIMEOUT_MS = 1000;
+// Four simulated Mecanum wheel motors
+// Each motor uses two LEDs:
+// Green = Forward, Red = Reverse
 
-// Motor direction outputs
-// Each pair represents IN1 and IN2
-const uint8_t motorPins[4][2] = {
-  {2, 3},  // Front Left
-  {4, 5},  // Front Right
-  {6, 7},  // Rear Left
-  {8, 9}   // Rear Right
+const byte motorPins[4][2] = {
+  {2, 3},  // Front Left  (FL)
+  {4, 5},  // Front Right (FR)
+  {6, 7},  // Rear Left   (RL)
+  {8, 9}   // Rear Right  (RR)
 };
 
-SoftwareSerial robotSerial(UART_RX, UART_TX);
+const char* motorNames[4] = {
+  "FL", "FR", "RL", "RR"
+};
 
-unsigned long lastReceived = 0;
-char activeCommand = 'S';
-
-void setMotor(uint8_t index, int direction) {
+void setMotor(byte motor, int direction) {
   digitalWrite(
-    motorPins[index][0],
+    motorPins[motor][0],
     direction > 0 ? HIGH : LOW
   );
 
   digitalWrite(
-    motorPins[index][1],
+    motorPins[motor][1],
     direction < 0 ? HIGH : LOW
   );
 }
@@ -38,81 +33,85 @@ void setWheels(int fl, int fr, int rl, int rr) {
   setMotor(1, fr);
   setMotor(2, rl);
   setMotor(3, rr);
-}
 
-void executeCommand(char command) {
-  switch (command) {
-    case 'F':
-      setWheels(1, 1, 1, 1);
-      break;
+  int states[4] = {fl, fr, rl, rr};
 
-    case 'B':
-      setWheels(-1, -1, -1, -1);
-      break;
+  for (int i = 0; i < 4; i++) {
+    Serial.print(motorNames[i]);
+    Serial.print(": ");
 
-    case 'L':
-      setWheels(-1, 1, -1, 1);
-      break;
+    if (states[i] > 0) {
+      Serial.print("FORWARD");
+    } else if (states[i] < 0) {
+      Serial.print("REVERSE");
+    } else {
+      Serial.print("STOP");
+    }
 
-    case 'R':
-      setWheels(1, -1, 1, -1);
-      break;
-
-    case 'Q':
-      setWheels(-1, 1, 1, -1);
-      break;
-
-    case 'E':
-      setWheels(1, -1, -1, 1);
-      break;
-
-    default:
-      setWheels(0, 0, 0, 0);
-      break;
+    Serial.print("  ");
   }
+
+  Serial.println();
 }
 
-bool isValidCommand(char command) {
-  return command == 'F' ||
-         command == 'B' ||
-         command == 'L' ||
-         command == 'R' ||
-         command == 'Q' ||
-         command == 'E' ||
-         command == 'S';
+void executeCommand(String command) {
+  command.trim();
+  command.toLowerCase();
+
+  Serial.print("Command: ");
+  Serial.println(command);
+
+  if (command == "forward" || command == "f") {
+    setWheels(1, 1, 1, 1);
+  }
+  else if (command == "backward" || command == "b") {
+    setWheels(-1, -1, -1, -1);
+  }
+  else if (command == "left" || command == "l") {
+    setWheels(-1, 1, -1, 1);
+  }
+  else if (command == "right" || command == "r") {
+    setWheels(1, -1, 1, -1);
+  }
+  else if (command == "strafeleft" || command == "q") {
+    setWheels(-1, 1, 1, -1);
+  }
+  else if (command == "straferight" || command == "e") {
+    setWheels(1, -1, -1, 1);
+  }
+  else if (command == "stop" || command == "s") {
+    setWheels(0, 0, 0, 0);
+  }
+  else {
+    Serial.println("Unknown command - STOP");
+    setWheels(0, 0, 0, 0);
+  }
 }
 
 void setup() {
   Serial.begin(115200);
-  robotSerial.begin(9600);
+  Serial.setTimeout(50);
 
   for (int i = 0; i < 4; i++) {
     pinMode(motorPins[i][0], OUTPUT);
     pinMode(motorPins[i][1], OUTPUT);
   }
 
-  executeCommand('S');
+  setWheels(0, 0, 0, 0);
 
-  Serial.println("Arduino Motor Controller Ready");
+  Serial.println();
+  Serial.println("=== Mecanum Robot Simulation ===");
+  Serial.println("Arduino UNO - 4 Motors / 8 LEDs");
+  Serial.println("Commands:");
+  Serial.println("forward, backward, left, right");
+  Serial.println("strafeleft, straferight, stop");
+  Serial.println("Or use: f b l r q e s");
+  Serial.println("================================");
 }
 
 void loop() {
-  while (robotSerial.available()) {
-    char incoming = robotSerial.read();
-
-    if (isValidCommand(incoming)) {
-      activeCommand = incoming;
-      lastReceived = millis();
-
-      executeCommand(activeCommand);
-    }
-  }
-
-  if (millis() - lastReceived > TIMEOUT_MS) {
-    if (activeCommand != 'S') {
-      activeCommand = 'S';
-      executeCommand('S');
-      Serial.println("UART timeout - motors stopped");
-    }
+  if (Serial.available() > 0) {
+    String command = Serial.readStringUntil('\n');
+    executeCommand(command);
   }
 }
