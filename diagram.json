@@ -1,0 +1,90 @@
+
+{
+  "version": 1,
+  "author": "No_Idea Robotics Project",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-arduino-uno",
+      "id": "uno",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "flF",
+      "top": -100,
+      "left": -180,
+      "attrs": {"color": "green"}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "flR",
+      "top": -65,
+      "left": -180,
+      "attrs": {"color": "red"}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "frF",
+      "top": -100,
+      "left": -100,
+      "attrs": {"color": "green"}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "frR",
+      "top": -65,
+      "left": -100,
+      "attrs": {"color": "red"}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "rlF",
+      "top": 200,
+      "left": -180,
+      "attrs": {"color": "green"}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "rlR",
+      "top": 235,
+      "left": -180,
+      "attrs": {"color": "red"}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "rrF",
+      "top": 200,
+      "left": -100,
+      "attrs": {"color": "green"}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "rrR",
+      "top": 235,
+      "left": -100,
+      "attrs": {"color": "red"}
+    }
+  ],
+  "connections": [
+    ["uno:2", "flF:A", "green", []],
+    ["uno:3", "flR:A", "red", []],
+    ["uno:4", "frF:A", "green", []],
+    ["uno:5", "frR:A", "red", []],
+    ["uno:6", "rlF:A", "green", []],
+    ["uno:7", "rlR:A", "red", []],
+    ["uno:8", "rrF:A", "green", []],
+    ["uno:9", "rrR:A", "red", []],
+    ["uno:GND.1", "flF:C", "black", []],
+    ["uno:GND.1", "flR:C", "black", []],
+    ["uno:GND.1", "frF:C", "black", []],
+    ["uno:GND.1", "frR:C", "black", []],
+    ["uno:GND.1", "rlF:C", "black", []],
+    ["uno:GND.1", "rlR:C", "black", []],
+    ["uno:GND.1", "rrF:C", "black", []],
+    ["uno:GND.1", "rrR:C", "black", []]
+  ],
+  "dependencies": {}
+}
