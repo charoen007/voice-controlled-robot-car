@@ -1,1 +1,104 @@
 
+{
+  "version": 1,
+  "author": "No_Idea - Metropolia Robotics",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-s3-devkitc-1",
+      "id": "esp32",
+      "top": -190,
+      "left": -340,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-arduino-uno",
+      "id": "uno",
+      "top": -170,
+      "left": 90,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "flF",
+      "top": -300,
+      "left": 390,
+      "attrs": {"color": "green"}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "flR",
+      "top": -260,
+      "left": 390,
+      "attrs": {"color": "red"}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "frF",
+      "top": -190,
+      "left": 390,
+      "attrs": {"color": "green"}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "frR",
+      "top": -150,
+      "left": 390,
+      "attrs": {"color": "red"}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "rlF",
+      "top": -80,
+      "left": 390,
+      "attrs": {"color": "green"}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "rlR",
+      "top": -40,
+      "left": 390,
+      "attrs": {"color": "red"}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "rrF",
+      "top": 30,
+      "left": 390,
+      "attrs": {"color": "green"}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "rrR",
+      "top": 70,
+      "left": 390,
+      "attrs": {"color": "red"}
+    }
+  ],
+  "connections": [
+    ["esp32:17", "uno:10", "blue", []],
+    ["esp32:GND.1", "uno:GND.1", "black", []],
+
+    ["uno:2", "flF:A", "green", []],
+    ["uno:3", "flR:A", "red", []],
+
+    ["uno:4", "frF:A", "green", []],
+    ["uno:5", "frR:A", "red", []],
+
+    ["uno:6", "rlF:A", "green", []],
+    ["uno:7", "rlR:A", "red", []],
+
+    ["uno:8", "rrF:A", "green", []],
+    ["uno:9", "rrR:A", "red", []],
+
+    ["flF:C", "uno:GND.2", "black", []],
+    ["flR:C", "uno:GND.2", "black", []],
+    ["frF:C", "uno:GND.2", "black", []],
+    ["frR:C", "uno:GND.2", "black", []],
+    ["rlF:C", "uno:GND.2", "black", []],
+    ["rlR:C", "uno:GND.2", "black", []],
+    ["rrF:C", "uno:GND.2", "black", []],
+    ["rrR:C", "uno:GND.2", "black", []]
+  ],
+  "dependencies": {}
+}
